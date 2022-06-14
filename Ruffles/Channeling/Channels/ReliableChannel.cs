@@ -48,6 +48,10 @@ namespace Ruffles.Channeling.Channels
             // Read the sequence number
             ushort sequence = (ushort)(payload.Array[payload.Offset] | (ushort)(payload.Array[payload.Offset + 1] << 8));
 
+            ushort _incomingLowestAckedSequence_andone = _incomingLowestAckedSequence;
+
+            _incomingLowestAckedSequence_andone += 1;
+
             lock (_receiveLock)
             {
                 if (SequencingUtils.Distance(sequence, _incomingLowestAckedSequence, sizeof(ushort)) <= 0 || _incomingAckedSequences.Contains(sequence))
@@ -57,7 +61,7 @@ namespace Ruffles.Channeling.Channels
 
                     return null;
                 }
-                else if (sequence == _incomingLowestAckedSequence + 1)
+                else if (sequence == _incomingLowestAckedSequence_andone)
                 {
                     // This is the "next" packet
 
